@@ -1,0 +1,227 @@
+<?php
+/**
+ * Database Class for Supabase PostgreSQL
+ * Handles all database operations and connections
+ */
+
+class Database {
+    private $connection = null;
+    private static $instance = null;
+
+    /**
+     * Singleton instance of Database
+     */
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Private constructor to prevent multiple instances
+     */
+    private function __construct() {
+        $this->connect();
+    }
+
+    /**
+     * Connect to Supabase PostgreSQL database
+     */
+    private function connect() {
+        try {
+            $dsn = "pgsql:host=" . SUPABASE_DB_HOST . ";port=" . SUPABASE_DB_PORT . ";dbname=" . SUPABASE_DB_NAME;
+            
+            $this->connection = new PDO(
+                $dsn,
+                SUPABASE_DB_USER,
+                SUPABASE_DB_PASSWORD,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_PERSISTENT => false
+                ]
+            );
+            
+            log_message('INFO', 'Database connection established successfully');
+        } catch (PDOException $e) {
+            log_message('ERROR', 'Database connection failed: ' . $e->getMessage());
+            throw new Exception('Database connection failed. Please ensure Supabase credentials are correct and the server is accessible.');
+        }
+    }
+
+    /**
+     * Get database connection
+     */
+    public function getConnection() {
+        if ($this->connection === null) {
+            $this->connect();
+        }
+        return $this->connection;
+    }
+
+    /**
+     * Execute a prepared statement
+     */
+    public function execute($query, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            log_message('ERROR', 'Query execution failed: ' . $e->getMessage());
+            throw new Exception('Database query failed');
+        }
+    }
+
+    /**
+     * Fetch all results
+     */
+    public function fetchAll($query, $params = []) {
+        $stmt = $this->execute($query, $params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Fetch single row
+     */
+    public function fetchOne($query, $params = []) {
+        $stmt = $this->execute($query, $params);
+        return $stmt->fetch();
+    }
+
+    /**
+     * Insert record and return insert ID
+     */
+    public function insert($table, $data) {
+        try {
+            $columns = implode(',', array_keys($data));
+            $placeholders = implode(',', array_fill(0, count($data), '?'));
+            $query = "INSERT INTO $table ($columns) VALUES ($placeholders) RETURNING *";
+            
+            $stmt = $this->execute($query, array_values($data));
+            return $stmt->fetch();
+        } catch (Exception $e) {
+            log_message('ERROR', "Insert failed on table $table: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Update records
+     */
+    public function update($table, $data, $where, $whereParams = []) {
+        try {
+            $setClause = implode(', ', array_map(function($key) {
+                return "$key = ?";
+            }, array_keys($data)));
+            
+            $query = "UPDATE $table SET $setClause WHERE $where RETURNING *";
+            $params = array_merge(array_values($data), $whereParams);
+            
+            $stmt = $this->execute($query, $params);
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            log_message('ERROR', "Update failed on table $table: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete records
+     */
+    public function delete($table, $where, $params = []) {
+        try {
+            $query = "DELETE FROM $table WHERE $where";
+            $stmt = $this->execute($query, $params);
+            return $stmt->rowCount();
+        } catch (Exception $e) {
+            log_message('ERROR', "Delete failed on table $table: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Get single record by ID
+     */
+    public function getById($table, $id, $idColumn = 'id') {
+        $query = "SELECT * FROM $table WHERE $idColumn = ?";
+        return $this->fetchOne($query, [$id]);
+    }
+
+    /**
+     * Get all records from a table
+     */
+    public function getAll($table, $limit = null, $offset = 0) {
+        $query = "SELECT * FROM $table";
+        if ($limit !== null) {
+            $query .= " LIMIT $limit OFFSET $offset";
+        }
+        return $this->fetchAll($query);
+    }
+
+    /**
+     * Count records in a table
+     */
+    public function count($table, $where = '', $params = []) {
+        $query = "SELECT COUNT(*) as count FROM $table";
+        if ($where) {
+            $query .= " WHERE $where";
+        }
+        $result = $this->fetchOne($query, $params);
+        return $result['count'] ?? 0;
+    }
+
+    /**
+     * Begin transaction
+     */
+    public function beginTransaction() {
+        return $this->connection->beginTransaction();
+    }
+
+    /**
+     * Commit transaction
+     */
+    public function commit() {
+        return $this->connection->commit();
+    }
+
+    /**
+     * Rollback transaction
+     */
+    public function rollback() {
+        return $this->connection->rollBack();
+    }
+
+    /**
+     * Audit log helper - logs all database actions
+     */
+    public function auditLog($userId, $actionType, $tableName, $recordId, $oldValues = null, $newValues = null, $ipAddress = '') {
+        try {
+            if (empty($ipAddress)) {
+                $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            }
+            
+            $auditData = [
+                'user_id' => $userId,
+                'action_type' => $actionType,
+                'table_name' => $tableName,
+                'record_id' => $recordId,
+                'old_values' => $oldValues ? json_encode($oldValues) : null,
+                'new_values' => $newValues ? json_encode($newValues) : null,
+                'ip_address' => $ipAddress
+            ];
+            
+            $this->insert('audit_trail', $auditData);
+        } catch (Exception $e) {
+            log_message('ERROR', 'Audit logging failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Close database connection
+     */
+    public function closeConnection() {
+        $this->connection = null;
+    }
+}

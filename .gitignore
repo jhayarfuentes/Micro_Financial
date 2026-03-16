@@ -1,0 +1,22 @@
+# Ignore config and credentials
+config.php
+.env
+
+# Composer / dependencies
+/vendor/
+
+# Node / build artifacts
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# Database + logs
+*.sql
+*.sqlite
+*.log
+
+# IDE and OS files
+.vscode/
+.DS_Store
+Thumbs.db

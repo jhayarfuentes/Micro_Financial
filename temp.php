@@ -1,0 +1,1 @@
+<?php require 'init.php'; =Database::getInstance(); =- * FROM audit_trail ORDER BY action_timestamp DESC LIMIT 1000'); =- * FROM compliance_audit ORDER BY check_date DESC LIMIT 1000'); echo 'audit rows=' . count() . ' compliance rows=' . count() . '\n'; ?>  
