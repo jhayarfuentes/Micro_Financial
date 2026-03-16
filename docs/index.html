@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro_Financial - Microfinance Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: linear-gradient(135deg, #0f246c 0%, #1e3a8a 100%); color: #fff; min-height: 100vh; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; padding: 4rem 2rem; }
+        h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3.5rem; margin-bottom: 1rem; }
+        .tagline { font-size: 1.3rem; opacity: 0.9; margin-bottom: 2rem; }
+        
+        .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+        .btn { padding: 0.8rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; border: none; font-size: 1rem; }
+        .btn-primary { background: #3B82F6; color: #fff; }
+        .btn-primary:hover { background: #2563EB; transform: translateY(-2px); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 2px solid #3B82F6; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 4rem; }
+        .feature { background: rgba(255,255,255,0.08); padding: 2rem; border-radius: 12px; border: 1px solid rgba(59,130,246,0.2); }
+        .feature h3 { font-size: 1.3rem; margin-bottom: 0.8rem; }
+        .feature p { opacity: 0.8; line-height: 1.6; }
+        
+        .tech-stack { margin-top: 4rem; text-align: center; }
+        .tech-stack h2 { margin-bottom: 1.5rem; }
+        .tech-list { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .tech { background: rgba(255,255,255,0.1); padding: 0.6rem 1.2rem; border-radius: 6px; font-size: 0.9rem; }
+        
+        footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; opacity: 0.8; }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .tagline { font-size: 1.1rem; }
+            .cta-buttons { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏦 Micro_Financial</h1>
+            <p class="tagline">A lightweight microfinance management system built in PHP</p>
+            <div class="cta-buttons">
+                <a href="#features" class="btn btn-primary">Learn More</a>
+                <a href="https://github.com/jhayarfuentes/Micro_Financial" class="btn btn-secondary" target="_blank">View on GitHub</a>
+            </div>
+        </header>
+
+        <section class="features" id="features">
+            <div class="feature">
+                <h3>💳 Client Management</h3>
+                <p>Register and manage clients with KYC verification, account tracking, and compliance audits.</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Loan Operations</h3>
+                <p>Full loan lifecycle: applications, approvals, disbursement tracking, and repayment schedules.</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Compliance & Audit</h3>
+                <p>Monitor regulatory compliance, audit trails, and institutional oversight across all operations.</p>
+            </div>
+            <div class="feature">
+                <h3>💹 Fund Allocation</h3>
+                <p>Track disbursements, fund allocation, portfolio risk, and collection monitoring in real-time.</p>
+            </div>
+            <div class="feature">
+                <h3>👥 Group Lending</h3>
+                <p>Support cooperative loan programs and solidarity-based group lending mechanisms.</p>
+            </div>
+            <div class="feature">
+                <h3>📈 Reporting</h3>
+                <p>Generate comprehensive reports, KPIs, and performance dashboards for decision-making.</p>
+            </div>
+        </section>
+
+        <section class="tech-stack">
+            <h2>Tech Stack</h2>
+            <div class="tech-list">
+                <span class="tech">PHP 8.x</span>
+                <span class="tech">MySQL</span>
+                <span class="tech">REST API</span>
+                <span class="tech">JavaScript</span>
+                <span class="tech">CSS3</span>
+                <span class="tech">Bootstrap</span>
+            </div>
+        </section>
+
+        <section style="margin-top: 3rem; background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px;">
+            <h2 style="margin-bottom: 1rem;">Quick Start</h2>
+            <p style="margin-bottom: 1rem;">1. Clone the repository:</p>
+            <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; overflow-x: auto; margin-bottom: 1rem;"><code>git clone https://github.com/jhayarfuentes/Micro_Financial.git</code></pre>
+            
+            <p style="margin-bottom: 1rem;">2. Set up config.php with your database credentials</p>
+            <p style="margin-bottom: 1rem;">3. Import the database schema</p>
+            <p style="margin-bottom: 1rem;">4. Run locally or deploy to production</p>
+            
+            <p style="margin-top: 2rem;">📖 <strong>Full documentation</strong> available in the <a href="https://github.com/jhayarfuentes/Micro_Financial" style="color: #3B82F6; text-decoration: underline;" target="_blank">GitHub repository</a></p>
+        </section>
+
+        <footer>
+            <p><strong>Micro_Financial</strong> © 2026 | MIT License | <a href="https://github.com/jhayarfuentes/Micro_Financial" style="color: #3B82F6; text-decoration: none;" target="_blank">GitHub Repository</a></p>
+        </footer>
+    </div>
+</body>
+</html>
